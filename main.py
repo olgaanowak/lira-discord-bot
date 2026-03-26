@@ -34,8 +34,8 @@ discord_client = discord.Client(intents=intents)
 # =========================
 # Файлы памяти
 # =========================
-DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = Path(os.getenv("DATA_DIR", "data"))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 HISTORY_FILE = DATA_DIR / "conversation_history.json"
 MEMORY_FILE = DATA_DIR / "memory.json"
