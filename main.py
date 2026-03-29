@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 from pathlib import Path
 
 import discord
@@ -39,6 +40,16 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 HISTORY_FILE = DATA_DIR / "conversation_history.json"
 MEMORY_FILE = DATA_DIR / "memory.json"
+
+SEED_HISTORY_FILE = Path("seed_conversation_history.json")
+SEED_MEMORY_FILE = Path("seed_memory.json")
+
+# Один раз копируем seed-файлы в volume / data, если там ещё пусто
+if not HISTORY_FILE.exists() and SEED_HISTORY_FILE.exists():
+    shutil.copy(SEED_HISTORY_FILE, HISTORY_FILE)
+
+if not MEMORY_FILE.exists() and SEED_MEMORY_FILE.exists():
+    shutil.copy(SEED_MEMORY_FILE, MEMORY_FILE)
 
 MAX_MESSAGES_PER_USER = 40
 
@@ -171,6 +182,7 @@ def build_memory_block(user_id: str) -> str:
 
     return "\n".join(selected_memories)
 
+
 def split_message(text: str, limit: int = 2000):
     """
     Splits a long message into chunks that fit Discord's message limit.
@@ -183,18 +195,14 @@ def split_message(text: str, limit: int = 2000):
     remaining = text
 
     while len(remaining) > limit:
-        # Сначала пробуем разделить по двойному переносу строки
         split_at = remaining.rfind("\n\n", 0, limit)
 
-        # Если не получилось — по одному переносу строки
         if split_at == -1:
             split_at = remaining.rfind("\n", 0, limit)
 
-        # Если и это не получилось — по пробелу
         if split_at == -1:
             split_at = remaining.rfind(" ", 0, limit)
 
-        # Если совсем ничего — режем жёстко
         if split_at == -1:
             split_at = limit
 
@@ -208,6 +216,7 @@ def split_message(text: str, limit: int = 2000):
         chunks.append(remaining)
 
     return chunks
+
 
 # =========================
 # Discord events
@@ -246,16 +255,12 @@ async def on_message(message):
         }
     ]
 
-    # Добавляем историю
     messages.extend(history)
 
     try:
         response = client_oai.chat.completions.create(
-            # Если твой snapshot реально существует и работает — оставь его.
-            # Иначе поставь gpt-5.1-chat-latest или другой актуальный ID из твоего аккаунта. gpt-5.1-2025-11-13
             model="gpt-5.1-chat-latest",
             messages=messages,
-            #temperature=0.7,
         )
 
         reply = response.choices[0].message.content.strip()
