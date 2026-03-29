@@ -1,6 +1,5 @@
 import os
 import json
-import shutil
 from pathlib import Path
 
 import discord
@@ -40,16 +39,6 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 HISTORY_FILE = DATA_DIR / "conversation_history.json"
 MEMORY_FILE = DATA_DIR / "memory.json"
-
-SEED_HISTORY_FILE = Path("seed_conversation_history.json")
-SEED_MEMORY_FILE = Path("seed_memory.json")
-
-# Один раз копируем seed-файлы в volume / data, если там ещё пусто
-if not HISTORY_FILE.exists() and SEED_HISTORY_FILE.exists():
-    shutil.copy(SEED_HISTORY_FILE, HISTORY_FILE)
-
-if not MEMORY_FILE.exists() and SEED_MEMORY_FILE.exists():
-    shutil.copy(SEED_MEMORY_FILE, MEMORY_FILE)
 
 MAX_MESSAGES_PER_USER = 40
 

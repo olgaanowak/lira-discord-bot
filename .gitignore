@@ -2,3 +2,5 @@
 data/
 __pycache__/
 *.pyc
+seed_memory.json
+seed_conversation_history.json
