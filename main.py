@@ -40,7 +40,7 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 HISTORY_FILE = DATA_DIR / "conversation_history.json"
 MEMORY_FILE = DATA_DIR / "memory.json"
 
-MAX_MESSAGES_PER_USER = 50
+MAX_MESSAGES_PER_USER = 40
 
 # =========================
 # Системный промпт
